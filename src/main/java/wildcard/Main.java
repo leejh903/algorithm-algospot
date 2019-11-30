@@ -41,33 +41,11 @@ public class Main {
         }
     }
 
-    private static boolean match(String p, String n) {
-        int pos = 0;
-        while (pos < n.length() && pos < p.length()
-                && (n.charAt(pos) == p.charAt(pos) || p.charAt(pos) == '?')) {
-            pos++;
-        }
-
-        if (pos == p.length()) {
-            return pos == n.length();
-        }
-
-        if (p.charAt(pos) == '*') {
-            for (int skip = 0; pos + skip <= n.length(); skip++) {
-                if (match(p.substring(pos + 1), n.substring(pos + skip))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private static boolean matchMemoized(int p, int n) {
         int ret = cache[p][n];
         if (ret != -1) return ret != 0;
         while (p < P.length() && n < N.length() && (P.charAt(p) == '?' || P.charAt(p) == N.charAt(n))) {
-            p++;
-            n++;
+            return matchMemoized(p + 1, n + 1);
         }
 
         if (p == P.length()) {
@@ -75,10 +53,8 @@ public class Main {
         }
 
         if (P.charAt(p) == '*') {
-            for (int skip = 0; skip + n <= N.length(); skip++) {
-                if (matchMemoized(p + 1, n + skip)) {
-                    return true;
-                }
+            if(matchMemoized(p + 1, n) || (n < N.length() && matchMemoized(p, n + 1))) {
+                return true;
             }
         }
         return false;
