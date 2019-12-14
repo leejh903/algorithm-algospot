@@ -5,8 +5,9 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class Main {
-    static final int MOD = 1_000_000_007;
+    static final int MOD = 1000000007;
     static int[] cache;
+    static int[] cache2;
 
     public static void main(String[] args) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
@@ -23,7 +24,9 @@ public class Main {
 
     private static void initCache() {
         cache = new int[101];
+        cache2 = new int[101];
         Arrays.fill(cache, -1);
+        Arrays.fill(cache2, -1);
     }
 
     private static int asymmetric(int width) {
@@ -38,13 +41,13 @@ public class Main {
 
     private static int asymmetric2(int width) {
         if (width <= 2) return 0;
-        if (cache[width] != -1) return cache[width];
+        if (cache2[width] != -1) return cache2[width];
 
-        int ret = asymmetric2(width - 2) % MOD;
-        ret = (ret + asymmetric2(width - 4)) % MOD;
-        ret = (ret + tiling(width - 3)) % MOD;
-        ret = (ret + tiling(width - 3)) % MOD;
-        return cache[width] = ret;
+        cache2[width] = asymmetric2(width - 2) % MOD;
+        cache2[width] = (cache2[width] + asymmetric2(width - 4)) % MOD;
+        cache2[width] = (cache2[width] + tiling(width - 3)) % MOD;
+        cache2[width] = (cache2[width] + tiling(width - 3)) % MOD;
+        return cache2[width];
     }
 
     private static int tiling(int width) {
