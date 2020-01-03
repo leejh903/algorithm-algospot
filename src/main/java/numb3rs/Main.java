@@ -3,6 +3,7 @@ package numb3rs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class Main {
     static int N, D, P, Q;
     static int[][] connected;
     static int[] deg;
+    static double[][] cache;
 
     public static void main(String[] args) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
@@ -29,7 +31,13 @@ public class Main {
                 StringBuilder sb = new StringBuilder();
                 for (int j = 0; j < T; j++) {
                     Q = Integer.parseInt(targets[j]);
-                    sb.append(String.format("%.8f ", search(path)));
+
+                    cache = new double[N][D];
+                    for (double[] doubles : cache) {
+                        Arrays.fill(doubles, -1);
+                    }
+
+                    sb.append(String.format("%.8f ", search2(P, 0)));
                 }
                 System.out.println(sb.toString());
             }
@@ -60,9 +68,22 @@ public class Main {
         return ret;
     }
 
+    private static double search2(int here, int days) {
+        if (days == D) return (here == Q ? 1.0 : 0.0);
+        if (cache[here][days] > -0.5) return cache[here][days];
+        double ret = 0.0;
+        for (int there = 0; there < N; there++) {
+            if (connected[here][there] == 1) {
+                ret += search2(there, days + 1) / deg[here];
+            }
+        }
+        return cache[here][days] = ret;
+    }
+
     private static void init(BufferedReader br) throws IOException {
         connected = new int[N][N];
         deg = new int[N];
+
         for (int i = 0; i < N; i++) {
             String[] nums = br.readLine().split(" ");
             int count = 0;
